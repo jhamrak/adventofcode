@@ -12,7 +12,7 @@ import java.util.Objects;
 public class Main {
 
     public static void main(String[] args) {
-        List<String> depths = Helper.readLines(Main.class, "day1test.txt");
+        List<String> depths = Helper.readLines(Main.class, "test.txt");
         countSingleIncreases(depths);
         countWindowIncreases(depths);
     }
