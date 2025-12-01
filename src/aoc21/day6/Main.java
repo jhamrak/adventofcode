@@ -1,47 +1,56 @@
-package hu.jhamrak.day3;
+package aoc21.day6;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Main {
 
 
     public static void main(String[] args) throws IOException {
-        List<String> report = Files.readAllLines(Paths.get("day3.txt"));
-        calculateGammaAndEpsilonRates(report);
-        calculateOGAndCO2Rates(report);
+        try (Scanner s = new Scanner(new BufferedReader(new FileReader("day6.txt")))) {
+
+            s.useDelimiter(",");
+            List<Integer> fishList = new ArrayList<>();
+            while (s.hasNext()) {
+                fishList.add(Integer.parseInt(s.next().trim()));
+            }
+            calculateFishListAfter80Days(fishList);
+        }
     }
 
-    private static void calculateGammaAndEpsilonRates(List<String> report) {
-        String gamma = "";
-        String epsilon = "";
-        int gammaDecimal = 0;
-        int epsilonDecimal = 0;
-        for (int i = 0; i < report.get(0).length(); i++) {
-            int mostCommonBitCounter = 0;
-            for (String binaryString : report) {
-                mostCommonBitCounter += binaryString.charAt(i) == '1' ? 1 : -1;
-            }
-            if (mostCommonBitCounter > 0) {
-                gamma = gamma.concat("1");
-                epsilon = epsilon.concat("0");
-            } else {
-                gamma = gamma.concat("0");
-                epsilon = epsilon.concat("1");
+    private static void calculateFishListAfter80Days(List<Integer> fishList) {
 
+        Map<Integer, Long> fishMap = fishList.stream().collect(Collectors.groupingBy(Function.identity(),Collectors.counting()));
+        for(int i = 0; i < 9; i++) {
+            if(!fishMap.containsKey(i)) {
+                fishMap.put(i,0L);
             }
-
-            gammaDecimal = Integer.parseInt(gamma, 2);
-            epsilonDecimal = Integer.parseInt(epsilon, 2);
         }
-        System.out.println(gamma);
-        System.out.println(epsilon);
-        System.out.println(gammaDecimal);
-        System.out.println(epsilonDecimal);
-        System.out.println(gammaDecimal * epsilonDecimal);
+        for (int i = 0; i < 256; i++) {
+            Map<Integer, Long> newFishMap = new HashMap<>();
+            for (int j = 0; j < 9; j++) {
+                newFishMap.put(j, 0L);
+            }
+            for (Integer fish : fishMap.keySet()) {
+                if (fish == 0) {
+                    newFishMap.merge(6, fishMap.get(fish), Long::sum);
+                    newFishMap.merge(8, fishMap.get(fish), Long::sum);
+                } else {
+                    newFishMap.merge(fish - 1, fishMap.get(fish), Long::sum);
+                }
+            }
+            fishMap = newFishMap;
+        }
+
+        System.out.println(fishMap.values().stream().mapToLong(l -> l).sum());
     }
 
 

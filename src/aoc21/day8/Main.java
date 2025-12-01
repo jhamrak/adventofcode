@@ -1,4 +1,4 @@
-package hu.jhamrak.day8;
+package aoc21.day8;
 
 import java.io.IOException;
 import java.nio.file.Files;

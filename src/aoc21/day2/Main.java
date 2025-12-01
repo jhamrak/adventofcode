@@ -1,10 +1,9 @@
-package hu.jhamrak.day2;
+package aoc21.day2;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 

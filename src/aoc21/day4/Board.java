@@ -1,4 +1,4 @@
-package hu.jhamrak.day4;
+package aoc21.day4;
 
 import java.util.List;
 

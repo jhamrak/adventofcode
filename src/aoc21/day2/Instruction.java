@@ -1,4 +1,4 @@
-package hu.jhamrak.day2;
+package aoc21.day2;
 
 public class Instruction {
 

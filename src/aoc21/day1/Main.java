@@ -1,14 +1,18 @@
-package hu.jhamrak.day1;
+package aoc21.day1;
+
+import common.Helper;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
-        List<String> depths = Files.readAllLines(Paths.get("day1.txt"));
+    public static void main(String[] args) {
+        List<String> depths = Helper.readLines(Main.class, "day1test.txt");
         countSingleIncreases(depths);
         countWindowIncreases(depths);
     }
