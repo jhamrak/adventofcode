@@ -1,4 +1,4 @@
-package aoc25.template;
+package aoc25.day6;
 
 import common.Helper;
 
