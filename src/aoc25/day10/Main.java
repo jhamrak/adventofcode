@@ -1,10 +1,18 @@
 package aoc25.day10;
 
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Context;
+import com.microsoft.z3.IntExpr;
+import com.microsoft.z3.IntNum;
+import com.microsoft.z3.Model;
+import com.microsoft.z3.Optimize;
+import com.microsoft.z3.Status;
 import common.Helper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 
 public class Main {
 
@@ -14,8 +22,8 @@ public class Main {
 
     public static void main(String[] args) {
         List<String> data = Helper.readLines(Main.class, Helper.INPUT);
-        Long result = part1(data);
-//        Long result = part2(data);
+//        Long result = part1(data);
+        Long result = part2(data);
         System.out.println(result);
     }
 
@@ -89,6 +97,7 @@ public class Main {
         for (String line : data) {
             lights = new ArrayList<>();
             buttons = new ArrayList<>();
+            joltages = new ArrayList<>();
 
             String parts[] = line.split(" ");
             for (char c : parts[0].toCharArray()) {
@@ -106,16 +115,47 @@ public class Main {
             }
 
             Arrays.stream(parts[parts.length - 1].substring(1, parts[parts.length - 1].length() - 1).split(",")).forEach(j -> joltages.add(Integer.parseInt(j)));
+//
+//            System.out.println(buttons);
+//            System.out.println(joltages);
 
-            System.out.println(buttons);
-            System.out.println(joltages);
+            Context ctx = new Context();
+            Optimize opt = ctx.mkOptimize();
 
-// TODO
+            IntExpr[] buttonVars = new IntExpr[buttons.size()];
+            for (int i = 0; i < buttons.size(); i++) {
+                buttonVars[i] = ctx.mkIntConst("button" + i);
+            }
+
+            for (IntExpr buttonVar : buttonVars) {
+                BoolExpr buttonNonNegative = ctx.mkGe(buttonVar, ctx.mkInt(0));
+                opt.Add(buttonNonNegative);
+            }
+
+            for (int i = 0; i < joltages.size(); i++) {
+                int targetJoltage = joltages.get(i);
+                IntExpr sum = ctx.mkInt(0);
+                for (int j = 0; j < buttons.size(); j++) {
+                    if (buttons.get(j).contains(i)) {
+                        sum = (IntExpr) ctx.mkAdd(sum, buttonVars[j]);
+                    }
+                }
+                opt.Add(ctx.mkEq(sum, ctx.mkInt(targetJoltage)));
+            }
+
+            opt.MkMinimize(ctx.mkAdd(buttonVars));
+
+            if (opt.Check() == Status.SATISFIABLE) {
+                Model model = opt.getModel();
+                long minPresses = 0;
+                for (IntExpr b : buttonVars)
+                    minPresses += ((IntNum) model.evaluate(b, false)).getInt();
+                result += minPresses;
+            }
 
 
         }
         System.out.println("----");
         return result;
     }
-
 }
